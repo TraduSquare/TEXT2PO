@@ -37,8 +37,9 @@
     <ApplicationIcon>Sin título-1.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Addins">
-      <HintPath>..\..\..\..\Desktop\Yarhl-master\Mono.Addins.dll</HintPath>
+    <Reference Include="Mono.Addins, Version=1.1.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Desktop\iconlord\Mono.Addins.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,11 +48,13 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Yarhl">
-      <HintPath>..\..\..\..\Desktop\Yarhl-master\Yarhl.dll</HintPath>
+    <Reference Include="Yarhl, Version=1.0.0.38794, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Desktop\iconlord\Yarhl.dll</HintPath>
     </Reference>
-    <Reference Include="Yarhl.Media">
-      <HintPath>..\..\..\..\Desktop\Yarhl-master\Yarhl.Media.dll</HintPath>
+    <Reference Include="Yarhl.Media, Version=1.0.0.39880, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Desktop\iconlord\Yarhl.Media.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
