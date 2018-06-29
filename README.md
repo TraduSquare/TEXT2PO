@@ -16,6 +16,9 @@ TEXT2PO - A simple converter for the text from the games Lord of Magna and Rune 
 ### 1.0
 * Added the import option for Lord of Magna and Rune Factory 4.
 * Bug fixes.
+### 1.1
+* Updated Yarhl libraries.
+* Bug fixes.
 ## Massive thanks to:
 * @pleonex
 * @Artuvazro

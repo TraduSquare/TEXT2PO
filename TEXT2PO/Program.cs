@@ -17,7 +17,7 @@ namespace TEXT2PO
         static void Main(string[] args)
         {
             {
-                Console.WriteLine("TEXT2PO V1 - A simple converter for the text from the games Lord of Magna and Rune Factory 4 by Darkmet98.");
+                Console.WriteLine("TEXT2PO 1.1 - A simple converter for the text from the games Lord of Magna and Rune Factory 4 by Darkmet98.");
                 Console.WriteLine("Massive thanks to Pleonex, Leeg and Megaflan for all.");
                 if (args.Length < 2)
                 {
@@ -39,14 +39,13 @@ namespace TEXT2PO
                     {
                     if (exportlord == true)
                         {
-                            Po po = new Po
-                             {
-                                    Header = new PoHeader("Lord Of Magna Maiden Heaven", "glowtranslations <glowtranslations@gmail.com>")
-                                {
-                                    Language = "es-ES",
-                                    LanguageTeam = "Glowtranslations",
-                                }
-                            };
+                        Po po = new Po
+                        {
+                            Header = new PoHeader("Lord Of Magna Maiden Heaven", "glowtranslations@gmail.com", "es")
+                            {
+                                LanguageTeam = "Glowtranslations",
+                            }
+                        };
                         string result = "";
                         Int32 magic = reader.ReadInt32();
                         Int32 count = reader.ReadInt32();
@@ -74,9 +73,8 @@ namespace TEXT2PO
                     {
                         Po po = new Po
                         {
-                            Header = new PoHeader("Rune Factory 4", "glowtranslations <glowtranslations@gmail.com>")
+                            Header = new PoHeader("Rune Factory 4", "glowtranslations@gmail.com", "es")
                             {
-                                Language = "es-ES",
                                 LanguageTeam = "Glowtranslations",
                             }
                         };
