@@ -4,8 +4,8 @@ TEXT2PO - A simple converter for the text from the games Lord of Magna and Rune 
 * Export the '.nxtxt' and '.eng' files in Po for the profesional CAT Tools.
 * Import the .po translated to the original file.
 * Import the translated files to po with the original english translation.
-##Usage 
-* TEXT2PO <mode> <file1> <file2>
+## Usage 
+* TEXT2PO "mode" "file1" "file2"
 ### Mode for Rune Factory 4:
 * -exportrune (export to po)
 * -importrune (import po)
