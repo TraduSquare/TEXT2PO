@@ -6,16 +6,17 @@ TEXT2PO - A simple converter for the text from the games Lord of Magna and Rune 
 * Import the translated files to po with the original english translation.
 ##Usage 
 * TEXT2PO <mode> <file1> <file2>
-* Mode for Rune Factory 4:
-** -exportrune (export to po)
-** -importrune (import po)
-** -transrune(import the translation from another file)
-** -exportrunefix(export and fix bad newlines from another programs)
-* Mode for Lord Of Magna Maiden Heaven:
-** -exportlord (export to po)
-** -importlord (import po)
-** -translord(import the translation from another file)
-** -exportlordfix(export and fix bad newlines from another programs)
+### Mode for Rune Factory 4:
+* -exportrune (export to po)
+* -importrune (import po)
+* -transrune(import the translation from another file)
+* -exportrunefix(export and fix bad newlines from another programs)
+### Mode for Lord Of Magna Maiden Heaven:
+* -exportlord (export to po)
+* -importlord (import po)
+* -translord(import the translation from another file)
+* -exportlordfix(export and fix bad newlines from another programs)
+### Examples 
 * Example 1: TEXT2PO.exe -exportlord msg.nxtxt
 * Example 2: TEXT2PO.exe -importlord msg.nxtxt.po
 * Example 3: TEXT2PO.exe -translord msg.nxtxt.po msgESP.nxtxt
