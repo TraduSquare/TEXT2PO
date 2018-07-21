@@ -34,11 +34,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Sin título-1.ico</ApplicationIcon>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Addins">
-      <HintPath>.\Mono.Addins.dll</HintPath>
+      <HintPath>lib\Mono.Addins.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -48,10 +48,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Yarhl">
-      <HintPath>.\Yarhl.dll</HintPath>
+      <HintPath>lib\Yarhl.dll</HintPath>
     </Reference>
     <Reference Include="Yarhl.Media">
-      <HintPath>.\Yarhl.Media.dll</HintPath>
+      <HintPath>lib\Yarhl.Media.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -62,7 +62,7 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Sin título-1.ico" />
+    <Content Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

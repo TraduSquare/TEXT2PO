@@ -10,184 +10,370 @@ namespace TEXT2PO
 {
     class TEXT2PO
     {
-        static bool exportrune;
-        static bool exportlord;
-        static bool importrune;
-        static bool importlord;
         static void Main(string[] args)
         {
             {
-                Console.WriteLine("TEXT2PO 1.1 - A simple converter for the text from the games Lord of Magna and Rune Factory 4 by Darkmet98.");
+                Console.WriteLine("TEXT2PO 1.2 - A simple converter for the text from the games Lord of Magna and Rune Factory 4 by Darkmet98.");
                 Console.WriteLine("Massive thanks to Pleonex, Leeg and Megaflan for all.");
-                if (args.Length < 2)
+                if (args.Length != 3 && args.Length != 2)
                 {
-                    System.Console.WriteLine("Usage: TEXT2PO <file> <po file> <game (-exportrune, -exportlord, importrune or importlord)>");
-                    System.Console.WriteLine("Example: TEXT2PO.exe msg.nxtxt -exportlord");
-                    System.Console.WriteLine("Example: TEXT2PO.exe msg.nxtxt msg.nxtxt.po -importlord");
+                    System.Console.WriteLine("Usage: TEXT2PO <mode> <file1> <file2>");
+                    System.Console.WriteLine("Mode for Rune Factory 4: -exportrune (export to po)/-importrune (import po)/-transrune(import the translation from another file)/-exportrunefix(export and fix bad newlines from another programs)");
+                    System.Console.WriteLine("Mode for Lord Of Magna Maiden Heaven: -exportlord (export to po)/-importlord (import po)/-translord(import the translation from another file)/-exportlordfix(export and fix bad newlines from another programs)");
+                    System.Console.WriteLine("");
+                    System.Console.WriteLine("Example 1: TEXT2PO.exe -exportlord msg.nxtxt");
+                    System.Console.WriteLine("Example 2: TEXT2PO.exe -importlord msg.nxtxt.po");
+                    System.Console.WriteLine("Example 3: TEXT2PO.exe -translord msg.nxtxt.po msgESP.nxtxt");
+                    System.Console.WriteLine("Example 4: TEXT2PO.exe -exportlordfix msgESP.nxtxt");
                     return;
                 }
-                for (int i = 0; i < args.Length; i++)
+                List<String> Filestrings = new List<String>();
+                List<String> Postrings = new List<String>();
+                List<int> stringsizes = new List<int>();
+                List<int> stringpositions = new List<int>();
+                string result = "";
+                Int32 magic;
+                Int32 count;
+                Int32 size;
+                Int32 position;
+                Int32 textsize;
+                int i = 0;
+                switch (args[0])
                 {
-                    if (args[i] == "-exportrune") exportrune = true;
-                    if (args[i] == "-exportlord") exportlord = true;
-                    if (args[i] == "-importrune") importrune = true;
-                    if (args[i] == "-importlord") importlord = true;
-                }
-                List<int> size2 = new List<int>();
-                List<int> text = new List<int>();
-                using (BinaryReader reader = new BinaryReader(File.Open(args[0], FileMode.Open)))
-                    {
-                    if (exportlord == true)
+                    case "-exportlord":
+                        using (BinaryReader reader = new BinaryReader(File.Open(args[1], FileMode.Open)))
                         {
-                        Po po = new Po
-                        {
-                            Header = new PoHeader("Lord Of Magna Maiden Heaven", "glowtranslations@gmail.com", "es")
+                            Po poexport = new Po
                             {
-                                LanguageTeam = "Glowtranslations",
+                                Header = new PoHeader("Lord Of Magna Maiden Heaven", "glowtranslations@gmail.com", "es")
+                                {
+                                    LanguageTeam = "Glowtranslations",
+                                }
+                            };
+                            magic = reader.ReadInt32();
+                            count = reader.ReadInt32();
+                            Console.WriteLine("Exporting...");
+                            for (i = 0; i < count; i++)
+                            {
+                                size = reader.ReadInt32();
+                                position = reader.ReadInt32();
+                                stringsizes.Add(size);
+                                stringpositions.Add(position);
                             }
-                        };
-                        string result = "";
-                        Int32 magic = reader.ReadInt32();
-                        Int32 count = reader.ReadInt32();
-                        Console.WriteLine("Exporting...");
-                        for (int i = 0; i < count; i++)
-                        {
-                            Int32 size = reader.ReadInt32();
-                            Int32 position = reader.ReadInt32();
-                            size2.Add(size);
-                            text.Add(position);
+                            for (i = 0; i < count; i++)
+                            {
+                                reader.BaseStream.Position = stringpositions[i]; //El puto flan
+                                byte[] array = reader.ReadBytes(stringsizes[i]);
+                                result = Encoding.Unicode.GetString(array);
+                                if (string.IsNullOrEmpty(result))
+                                    result = "<!empty>";
+                                poexport.Add(new PoEntry(result) { Context = i.ToString() });
+                            }
+                            poexport.ConvertTo<BinaryFormat>().Stream.WriteTo(args[1] + ".po");
+                            Console.WriteLine("The file is exported.");
                         }
-                        for (int i = 0; i < count; i++)
+                        break;
+                    case "-exportlordfix":
+                        using (BinaryReader reader = new BinaryReader(File.Open(args[1], FileMode.Open)))
                         {
-                            reader.BaseStream.Position = text[i]; //El puto flan
-                            byte[] array = reader.ReadBytes(size2[i]);
-                            result = Encoding.Unicode.GetString(array);
-                            if (string.IsNullOrEmpty(result))
-                                result = "<!empty>";
-                            po.Add(new PoEntry(result) { Context = i.ToString() });
+                            Po poexport = new Po
+                            {
+                                Header = new PoHeader("Lord Of Magna Maiden Heaven", "glowtranslations@gmail.com", "es")
+                                {
+                                    LanguageTeam = "Glowtranslations",
+                                }
+                            };
+                            magic = reader.ReadInt32();
+                            count = reader.ReadInt32();
+                            Console.WriteLine("Exporting...");
+                            for (i = 0; i < count; i++)
+                            {
+                                size = reader.ReadInt32();
+                                position = reader.ReadInt32();
+                                stringsizes.Add(size);
+                                stringpositions.Add(position);
+                            }
+                            for (i = 0; i < count; i++)
+                            {
+                                reader.BaseStream.Position = stringpositions[i]; //El puto flan
+                                byte[] array = reader.ReadBytes(stringsizes[i]);
+                                result = Encoding.Unicode.GetString(array);
+                                result = result.Replace("\r", "");
+                                if (string.IsNullOrEmpty(result))
+                                    result = "<!empty>";
+                                poexport.Add(new PoEntry(result) { Context = i.ToString() });
+                            }
+                            poexport.ConvertTo<BinaryFormat>().Stream.WriteTo(args[1] + ".po");
+                            Console.WriteLine("The file is exported.");
                         }
-                        po.ConvertTo<BinaryFormat>().Stream.WriteTo(args[0] + ".po");
-                        Console.WriteLine("The file is exported.");
-                    }
-                    if (exportrune == true)
-                    {
-                        Po po = new Po
+                        break;
+                    case "-exportrune":
+                        using (BinaryReader reader = new BinaryReader(File.Open(args[1], FileMode.Open)))
+                        {
+                            Po poexport = new Po
+                            {
+                                Header = new PoHeader("Rune Factory 4", "glowtranslations@gmail.com", "es")
+                                {
+                                    LanguageTeam = "Glowtranslations",
+                                }
+                            };
+                            magic = reader.ReadInt32();
+                            count = reader.ReadInt32();
+                            Console.WriteLine("Exporting...");
+                            for (i = 0; i < count; i++)
+                            {
+                                size = reader.ReadInt32();
+                                position = reader.ReadInt32();
+                                stringsizes.Add(size);
+                                stringpositions.Add(position);
+                            }
+                            for (i = 0; i < count; i++)
+                            {
+                                reader.BaseStream.Position = stringpositions[i]; //El puto flan
+                                byte[] array = reader.ReadBytes(stringsizes[i]);
+                                result = Encoding.UTF8.GetString(array);
+                                if (string.IsNullOrEmpty(result))
+                                    result = "<!empty>";
+                                poexport.Add(new PoEntry(result) { Context = i.ToString() });
+                            }
+                            poexport.ConvertTo<BinaryFormat>().Stream.WriteTo(args[1] + ".po");
+                            Console.WriteLine("The file is exported.");
+                        }
+                        break;
+                    case "-exportrunefix":
+                        using (BinaryReader reader = new BinaryReader(File.Open(args[1], FileMode.Open)))
+                        {
+                            Po poexport = new Po
+                            {
+                                Header = new PoHeader("Rune Factory 4", "glowtranslations@gmail.com", "es")
+                                {
+                                    LanguageTeam = "Glowtranslations",
+                                }
+                            };
+                            magic = reader.ReadInt32();
+                            count = reader.ReadInt32();
+                            Console.WriteLine("Exporting...");
+                            for (i = 0; i < count; i++)
+                            {
+                                size = reader.ReadInt32();
+                                position = reader.ReadInt32();
+                                stringsizes.Add(size);
+                                stringpositions.Add(position);
+                            }
+                            for (i = 0; i < count; i++)
+                            {
+                                reader.BaseStream.Position = stringpositions[i]; //El puto flan
+                                byte[] array = reader.ReadBytes(stringsizes[i]);
+                                result = Encoding.UTF8.GetString(array);
+                                result = result.Replace("\r", "");
+                                if (string.IsNullOrEmpty(result))
+                                    result = "<!empty>";
+                                poexport.Add(new PoEntry(result) { Context = i.ToString() });
+                            }
+                            poexport.ConvertTo<BinaryFormat>().Stream.WriteTo(args[1] + ".po");
+                            Console.WriteLine("The file is exported.");
+                        }
+                        break;
+                    case "-importlord":
+                        DataStream inputLord = new DataStream(args[1], FileOpenMode.Read);
+                        BinaryFormat binaryLord = new BinaryFormat(inputLord);
+                        Po poLord = binaryLord.ConvertTo<Po>();
+                        inputLord.Dispose();
+                        Console.WriteLine("Importing...");
+                        using (BinaryWriter writer = new BinaryWriter(File.Open(args[1] + ".exported", FileMode.Create)))
+                        {
+                            writer.Write(0x54584554);
+                            writer.Write(poLord.Entries.Count);
+                            for (i = 0; i < poLord.Entries.Count * 2; i++)
+                            {
+                                writer.Write(0x00000000);
+                            }
+                            foreach (var entry in poLord.Entries)
+                            {
+                                string potext = string.IsNullOrEmpty(entry.Translated) ?
+                                    entry.Original : entry.Translated;
+                                if (potext == "<!empty>")
+                                    potext = string.Empty;
+                                stringpositions.Add((int)writer.BaseStream.Position);
+                                byte[] stringtext = Encoding.Unicode.GetBytes(potext += "\0");
+                                textsize = stringtext.Length;
+                                stringsizes.Add(textsize);
+                                writer.Write(stringtext);
+                            }
+                            writer.BaseStream.Position = 0x8;
+                            int countposition = 0x8 * poLord.Entries.Count + 1;
+                            for (i = 0; i < poLord.Entries.Count; i++)
+                            {
+                                writer.Write(stringsizes[i] - 2);
+                                writer.Write(stringpositions[i]);
+                            }
+                            Console.WriteLine("The file is imported.");
+                        }
+                        break;
+                    case "-importrune":
+                        Console.WriteLine("Importing...");
+                        DataStream input = new DataStream(args[1], FileOpenMode.Read);
+                        BinaryFormat binary = new BinaryFormat(input);
+                        Po po = binary.ConvertTo<Po>();
+                        input.Dispose();
+                        using (BinaryWriter writer = new BinaryWriter(File.Open(args[1] + ".exported", FileMode.Create)))
+                        {
+                            writer.Write(0x54584554);
+                            writer.Write(po.Entries.Count);
+                            for (i = 0; i < po.Entries.Count * 2; i++)
+                            {
+                                writer.Write(0x00000000);
+                            }
+                            foreach (var entry in po.Entries)
+                            {
+                                string potext = string.IsNullOrEmpty(entry.Translated) ?
+                                    entry.Original : entry.Translated;
+                                if (potext == "<!empty>")
+                                    potext = string.Empty;
+                                stringpositions.Add((int)writer.BaseStream.Position);
+                                byte[] stringtext = Encoding.UTF8.GetBytes(potext += "\0");
+                                textsize = stringtext.Length;
+                                stringsizes.Add(textsize);
+                                writer.Write(stringtext);
+                            }
+                            writer.BaseStream.Position = 0x8;
+                            int countposition = 0x8 * po.Entries.Count + 1;
+                            for (i = 0; i < po.Entries.Count; i++)
+                            {
+                                writer.Write(stringsizes[i] - 1);
+                                writer.Write(stringpositions[i]);
+                            }
+                            Console.WriteLine("The file is imported.");
+                        }
+                        break;
+                    case "-transrune":
+                        using (BinaryReader reader = new BinaryReader(File.Open(args[2], FileMode.Open)))
+                        {
+                            Console.WriteLine("Importing old translation...");
+                            magic = reader.ReadInt32();
+                            count = reader.ReadInt32();
+                            for (i = 0; i < count; i++)
+                            {
+                                size = reader.ReadInt32();
+                                position = reader.ReadInt32();
+                                stringsizes.Add(size);
+                                stringpositions.Add(position);
+                            }
+                            for (i = 0; i < count; i++)
+                            {
+                                reader.BaseStream.Position = stringpositions[i]; //El puto flan
+                                byte[] array = reader.ReadBytes(stringsizes[i]);
+                                result = Encoding.UTF8.GetString(array);
+                                Filestrings.Add(result);
+                            }
+                            
+                            }
+                        Console.WriteLine("Old translation preloaded.");
+                        DataStream inputimp = new DataStream(args[1], FileOpenMode.Read);
+                        BinaryFormat binaryimp = new BinaryFormat(inputimp);
+                        Po poimp = binaryimp.ConvertTo<Po>();
+                        inputimp.Dispose();
+                        Console.WriteLine("Importing original translation...");
+                        foreach (var entry in poimp.Entries)
+                        {
+                            Postrings.Add(entry.Original);
+                        }
+                        Console.WriteLine("Original text preloaded.");
+                        Po poexport1 = new Po
                         {
                             Header = new PoHeader("Rune Factory 4", "glowtranslations@gmail.com", "es")
                             {
                                 LanguageTeam = "Glowtranslations",
                             }
                         };
-                        string result = "";
-                        Int32 magic = reader.ReadInt32();
-                        Int32 count = reader.ReadInt32();
-                        Console.WriteLine("Exporting...");
-                        for (int i = 0; i < count; i++)
+                        for (i = 0; i < count; i++)
                         {
-                            Int32 size = reader.ReadInt32();
-                            Int32 position = reader.ReadInt32();
-                            size2.Add(size);
-                            text.Add(position);
+                            PoEntry entry = new PoEntry();
+                            Console.WriteLine("Checking and comparing line " + i + " from " + count + " lines");
+                            if (string.IsNullOrEmpty(Filestrings[i]))
+                                Filestrings[i] = "<!empty>";
+                            if (Filestrings[i] == Postrings[i])
+                            {
+                                entry.Context = i.ToString();
+                                entry.Original = Postrings[i];
+                            }
+                            else
+                            {
+                                entry.Context = i.ToString();
+                                entry.Translated = Filestrings[i];
+                                entry.Original = Postrings[i];
+                            }
+                            poexport1.Add(entry);
+                            //poexport1.ConvertTo<BinaryFormat>().Stream.WriteTo(args[1] + "(exported)" + ".po"); //Pasta code
                         }
-                        for (int i = 0; i < count; i++)
+                        using (var poStream = poexport1.ConvertTo<BinaryFormat>())
+                            poStream.Stream.WriteTo(args[1] + "(exported).po"); //Thanks pleonex
+                        Console.WriteLine("Finished.");
+                        break;
+                    case "-translord":
+                        using (BinaryReader reader = new BinaryReader(File.Open(args[2], FileMode.Open)))
                         {
-                            reader.BaseStream.Position = text[i]; //El puto flan
-                            byte[] array = reader.ReadBytes(size2[i]);
-                            result = Encoding.UTF8.GetString(array);
-                            if (string.IsNullOrEmpty(result))
-                                result = "<!empty>";
-                            po.Add(new PoEntry(result) { Context = i.ToString() });
-                        }
-                        po.ConvertTo<BinaryFormat>().Stream.WriteTo(args[0] + ".po");
-                        Console.WriteLine("The file is exported.");
-                    }
-                    if (importrune == true)
-                    {
-                        Console.WriteLine("Importing...");
-                        DataStream input = new DataStream(args[1], FileOpenMode.Read);
-                        BinaryFormat binary = new BinaryFormat(input);
-                        Po po = binary.ConvertTo<Po>();
-                        input.Dispose();
-                        List<int> size = new List<int>();
-                        List<int> position = new List<int>();
-                        var stream = reader.BaseStream;
+                            Console.WriteLine("Importing old translation...");
+                            magic = reader.ReadInt32();
+                            count = reader.ReadInt32();
+                            for (i = 0; i < count; i++)
+                            {
+                                size = reader.ReadInt32();
+                                position = reader.ReadInt32();
+                                stringsizes.Add(size);
+                                stringpositions.Add(position);
+                            }
+                            for (i = 0; i < count; i++)
+                            {
+                                reader.BaseStream.Position = stringpositions[i]; //El puto flan
+                                byte[] array = reader.ReadBytes(stringsizes[i]);
+                                result = Encoding.Unicode.GetString(array);
+                                Filestrings.Add(result);
+                            }
 
-                        using (BinaryWriter writer = new BinaryWriter(File.Open(args[0] + ".exported", FileMode.Create)))
+                        }
+                        Console.WriteLine("Old translation preloaded.");
+                        DataStream inputimp1 = new DataStream(args[1], FileOpenMode.Read);
+                        BinaryFormat binaryimp1 = new BinaryFormat(inputimp1);
+                        Po poimp1 = binaryimp1.ConvertTo<Po>();
+                        inputimp1.Dispose();
+                        Console.WriteLine("Importing original translation...");
+                        foreach (var entry in poimp1.Entries)
                         {
-                            writer.Write(0x54584554);
-                            writer.Write(po.Entries.Count);
-                            for (int i = 0; i < po.Entries.Count * 2; i++)
-                            {
-                                writer.Write(0x00000000);
-                            }
-                            foreach (var entry in po.Entries)
-                            {
-                                string potext = string.IsNullOrEmpty(entry.Translated) ?
-                                    entry.Original : entry.Translated;
-                                if (potext == "<!empty>")
-                                    potext = string.Empty;
-                                position.Add((int)writer.BaseStream.Position);
-                                byte[] stringtext = Encoding.UTF8.GetBytes(potext += "\0");
-                                writer.Write(stringtext);
-                                int textsize = stringtext.Length;
-                                size.Add(textsize);
-                                
-
-                            }
-                            writer.BaseStream.Position = 0x8;
-                            int countposition = 0x8 * po.Entries.Count + 1;
-                            for (int i = 0; i < po.Entries.Count; i++)
-                            {
-                                writer.Write(size[i] - 1);
-                                writer.Write(position[i]);
-                            }
-                            Console.WriteLine("The file is imported.");
+                            Postrings.Add(entry.Original);
                         }
-
-                    }
-                    if (importlord == true)
-                    {
-                        Console.WriteLine("Importing...");
-                        DataStream input = new DataStream(args[1], FileOpenMode.Read);
-                        BinaryFormat binary = new BinaryFormat(input);
-                        Po po = binary.ConvertTo<Po>();
-                        input.Dispose();
-                        List<int> size = new List<int>();
-                        List<int> position = new List<int>();
-                        var stream = reader.BaseStream;
-
-                        using (BinaryWriter writer = new BinaryWriter(File.Open(args[0] + ".exported", FileMode.Create)))
+                        Console.WriteLine("Original text preloaded.");
+                        Po poexport2 = new Po
                         {
-                            writer.Write(0x54584554);
-                            writer.Write(po.Entries.Count);
-                            for (int i = 0; i < po.Entries.Count * 3; i++)
+                            Header = new PoHeader("Rune Factory 4", "glowtranslations@gmail.com", "es")
                             {
-                                writer.Write(0x00000000);
+                                LanguageTeam = "Glowtranslations",
                             }
-                            foreach (var entry in po.Entries)
+                        };
+                        for (i = 0; i < count; i++)
+                        {
+                            PoEntry entrada = new PoEntry();
+                            Console.WriteLine("Checking and comparing line " + i + " from " + count + " lines");
+                            if (string.IsNullOrEmpty(Filestrings[i]))
+                                Filestrings[i] = "<!empty>";
+                            if (Filestrings[i] == Postrings[i])
                             {
-                                string potext = string.IsNullOrEmpty(entry.Translated) ?
-                                    entry.Original : entry.Translated;
-                                if (potext == "<!empty>")
-                                    potext = string.Empty;
-                                position.Add((int)writer.BaseStream.Position);
-                                byte[] stringtext = Encoding.Unicode.GetBytes(potext += "\0");
-                                writer.Write(stringtext);
-                                int textsize = stringtext.Length;
-                                size.Add(textsize);
-
-
+                                entrada.Context = i.ToString();
+                                entrada.Original = Postrings[i];
                             }
-                            writer.BaseStream.Position = 0x8;
-                            int countposition = 0x8 * po.Entries.Count + 1;
-                            for (int i = 0; i < po.Entries.Count; i++)
+                            else
                             {
-                                writer.Write(size[i] - 1);
-                                writer.Write(position[i]);
+                                entrada.Context = i.ToString();
+                                entrada.Translated = Filestrings[i];
+                                entrada.Original = Postrings[i];
                             }
-                            Console.WriteLine("The file is imported.");
+                            poexport2.Add(entrada);
                         }
-                    }
+                        //poexport2.ConvertTo<BinaryFormat>().Stream.WriteTo(args[1] + "(exported)" + ".po"); //Pasta code
+                        using (var poStream = poexport2.ConvertTo<BinaryFormat>())
+                            poStream.Stream.WriteTo(args[1] + "(exported).po"); //Thanks pleonex
+                        Console.WriteLine("Finished.");
+                        break;
                 }
             }
         }
